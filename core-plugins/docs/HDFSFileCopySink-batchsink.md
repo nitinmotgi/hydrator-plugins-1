@@ -35,7 +35,7 @@ This sink plugin only reads StructuredRecords with the following schema. Each re
 | **group**              | String | The group that the of the file belongs to.                                                                                                     |
 | **owner**              | String | The owner of the file.                                                                                                                         |
 | **isFolder**           | Boolean| Whether or not the file is a folder.                                                                                                           |
-| **basePath**           | String | The base path of the file. This path will be appended to the base path specified in the FileCopySink to create the file in the destination.    |
+| **relativePath**       | String | The relative path of the file. This path will be appended to the base path specified in the FileCopySink to create the file in the destination.|
 | **filesystem**         | String | Contains the string "amazons3". Used to identify the type of filesystem this record originated from.                                           |
 | **permission**         | int    | The file's access permission                                                                                                                   |
 | **Credentials**        | Record | Additional information required to connect to the source Filesystem.                                                                           |

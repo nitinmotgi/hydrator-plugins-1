@@ -42,7 +42,7 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Buffer Size",
+          "label": "Buffer Size (MB)",
           "name": "bufferSize",
           "default": "4096"
         }
