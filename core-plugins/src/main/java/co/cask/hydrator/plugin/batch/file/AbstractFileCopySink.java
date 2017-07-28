@@ -116,12 +116,7 @@ public abstract class AbstractFileCopySink
       this.basePath = basePath;
       this.enableOverwrite = enableOverwrite;
       this.preserveFileOwner = preserveFileOwner;
-      if (bufferSize != null) {
-        this.bufferSize = bufferSize << 20;
-      } else {
-        this.bufferSize = FileCopyRecordWriter.DEFAULT_BUFFER_SIZE;
-      }
-
+      this.bufferSize = bufferSize;
     }
 
     public void validate() {
@@ -152,7 +147,14 @@ public abstract class AbstractFileCopySink
       FileCopyOutputFormat.setBasePath(conf, config.basePath);
       FileCopyOutputFormat.setEnableOverwrite(conf, config.enableOverwrite.toString());
       FileCopyOutputFormat.setPreserveFileOwner(conf, config.preserveFileOwner.toString());
-      FileCopyOutputFormat.setBufferSize(conf, String.valueOf(config.bufferSize));
+
+      if (config.bufferSize != null) {
+        // bufferSize is in megabytes
+        FileCopyOutputFormat.setBufferSize(conf, String.valueOf(config.bufferSize << 20));
+      } else {
+        FileCopyOutputFormat.setBufferSize(conf, String.valueOf(FileCopyRecordWriter.DEFAULT_BUFFER_SIZE));
+      }
+      
       // always disable caching
       conf.put(String.format("fs.%s.impl.disable.cache", config.getScheme()), String.valueOf(true));
 
