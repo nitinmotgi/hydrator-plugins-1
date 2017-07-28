@@ -154,7 +154,7 @@ public abstract class AbstractFileCopySink
       } else {
         FileCopyOutputFormat.setBufferSize(conf, String.valueOf(FileCopyRecordWriter.DEFAULT_BUFFER_SIZE));
       }
-      
+
       // always disable caching
       conf.put(String.format("fs.%s.impl.disable.cache", config.getScheme()), String.valueOf(true));
 
