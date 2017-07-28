@@ -13,14 +13,13 @@ You may want to periodically sync your HDFS with some remote filesystem. Schedul
 
 Properties
 ----------
-| Configuration                            | Required | Default   | Description                                                                                            |
-| :--------------------------------------- | :------: | :------   | :----------------------------------------------------------------------------------------------------- |
-| **Reference Name**                       |  **Y**   | None      | This will be used to uniquely identify this source for lineage, annotating metadata, etc.              |
-| **Base Path**                            |  **Y**   | None      | The folder where the copied files will be placed. It will be created if it doesn't exist.              |
-| **Enable Overwrite**                     |  **Y**   | False     | Specifies whether or not to overwrite files if it already exists.                                      |
-| **Preserve File Owner**                  |  **Y**   | False     | Whether or not to preserve the owner of the file from source filesystem.                               |
-| **Enable Filesystem Connection Caching** |  **Y**   | True      | Whether or not for splits to use cached connections to filesystems.                                    |
-| **Buffer Size**                          |  **Y**   | 1 MB      | The size of the buffer (in Bytes) that temporarily stores data from file input stream while copying.   |
+| Configuration                            | Required | Default   | Description                                                                                                                  |
+| :--------------------------------------- | :------: | :------   | :--------------------------------------------------------------------------------------------------------------------------- |
+| **Reference Name**                       |  **Y**   | None      | This will be used to uniquely identify this source for lineage, annotating metadata, etc.                                    |
+| **Base Path**                            |  **Y**   | None      | The folder where the copied files will be placed. It will be created if it doesn't exist.                                    |
+| **Enable Overwrite**                     |  **Y**   | False     | Specifies whether or not to overwrite files if it already exists.                                                            |
+| **Preserve File Owner**                  |  **Y**   | False     | Whether or not to preserve the owner of the file from source filesystem.                                                     |
+| **Buffer Size**                          |  **Y**   | 1 MB      | The size of the buffer (in MegaBytes) that temporarily stores data from file input stream while copying. Defaults to 1 MB.   |
 
 Usage Notes
 -----------

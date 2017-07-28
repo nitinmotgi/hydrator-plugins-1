@@ -33,6 +33,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,13 +69,15 @@ public abstract class AbstractFileCopySink
                         Emitter<KeyValue<NullWritable, AbstractFileMetadata>> emitter)
     throws Exception {
     AbstractFileMetadata output;
-    switch ((String) input.get(AbstractFileMetadata.FILESYSTEM)) {
-      case S3FileMetadata.FILESYSTEM_NAME :
+    String fsScheme = URI.create((String) input.get(AbstractFileMetadata.HOST_URI)).getScheme();
+    switch (fsScheme) {
+      case "s3n" :
+      case "s3a" :
         output = new S3FileMetadata(input);
         break;
 
       default:
-        throw new IllegalArgumentException("unrecognized database type");
+        throw new IllegalArgumentException(fsScheme + "is not supported.");
 
     }
     emitter.emit(new KeyValue<NullWritable, AbstractFileMetadata>(null, output));
@@ -97,26 +100,28 @@ public abstract class AbstractFileCopySink
     @Description("Whether or not to overwrite if the file already exists.")
     public Boolean enableOverwrite;
 
-    @Description("Whether or not for splits to use cached connections to the filesystems.")
-    public Boolean filesystemCaching;
-
     @Description("Whether or not to preserve the owner of the file from source filesystem.")
     public Boolean preserveFileOwner;
 
     // TODO: figure out why this still shows up as required in configuration UI
     @Macro
     @Nullable
-    @Description("The size of the buffer that temporarily stores data from file input stream.")
+    @Description("The size of the buffer (in MB) that temporarily stores data from file input stream. Defaults to" +
+      " 1 MB")
     public Integer bufferSize;
 
-    public AbstractFileCopySinkConfig(String name, String basePath, Boolean enableOverwrite, Boolean filesystemCaching,
+    public AbstractFileCopySinkConfig(String name, String basePath, Boolean enableOverwrite,
                                       Boolean preserveFileOwner, @Nullable Integer bufferSize) {
       super(name);
       this.basePath = basePath;
       this.enableOverwrite = enableOverwrite;
       this.preserveFileOwner = preserveFileOwner;
-      this.filesystemCaching = filesystemCaching;
-      this.bufferSize = bufferSize;
+      if (bufferSize != null) {
+        this.bufferSize = bufferSize << 20;
+      } else {
+        this.bufferSize = FileCopyRecordWriter.DEFAULT_BUFFER_SIZE;
+      }
+
     }
 
     public void validate() {
@@ -148,7 +153,8 @@ public abstract class AbstractFileCopySink
       FileCopyOutputFormat.setEnableOverwrite(conf, config.enableOverwrite.toString());
       FileCopyOutputFormat.setPreserveFileOwner(conf, config.preserveFileOwner.toString());
       FileCopyOutputFormat.setBufferSize(conf, String.valueOf(config.bufferSize));
-      FileCopyOutputFormat.setFilesystemCaching(conf, config.filesystemCaching, config.getScheme());
+      // always disable caching
+      conf.put(String.format("fs.%s.impl.disable.cache", config.getScheme()), String.valueOf(true));
 
       // set the URI for the destination filesystem if it's provided
       if (config.getHostUri() != null) {
